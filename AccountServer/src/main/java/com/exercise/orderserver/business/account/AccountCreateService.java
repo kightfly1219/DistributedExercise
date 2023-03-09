@@ -24,11 +24,11 @@ public class AccountCreateService implements ServiceLogic<AccountCreateReq, Acco
 
     final AccountRepository accountRepository;
 
-    final RedisTemplate accoutRedis;
+    final StringRedisTemplate accoutRedis;
 
     final DefaultMQProducer producer;
 
-    public AccountCreateService(AccountRepository accountRepository, RedisTemplate accoutRedis, DefaultMQProducer producer) {
+    public AccountCreateService(AccountRepository accountRepository, StringRedisTemplate accoutRedis, DefaultMQProducer producer) {
         this.accountRepository = accountRepository;
         this.accoutRedis = accoutRedis;
         this.producer = producer;
@@ -55,7 +55,7 @@ public class AccountCreateService implements ServiceLogic<AccountCreateReq, Acco
         String key = accountEntity.getId().toString();
         try
         {
-            accoutRedis.opsForValue().set(key, accountEntity, Duration.ofDays(60));
+            accoutRedis.opsForValue().set(key, accountEntity.g, Duration.ofDays(60));
         } catch (Exception ex) {
             log.warn("Redis缓存保存失败" + ex);
         }
