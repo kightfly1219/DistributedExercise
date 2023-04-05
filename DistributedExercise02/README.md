@@ -1,43 +1,17 @@
-# DistributedExercise01
-## 结构图
+作业二：分布式事务专项练习
+场景分析：假设一个电商系统中用户每成功下单一次就可以添加对应的积分记录。现有架构中，系统存在一个订单（Order）服务和一个用户账户（Account）服务。当用户执行下单操作时，需要通过订单服务生成一个订单记录，同时通过用户账户服务新增一条账户积分变更记录，我们希望这两个操作的数据是一致的，即订单创建操作和积分记录变更要不同时成功，要不同时失败。针对这一场景，我们可以应用哪些技术体系来实现这一目标？具体的实现过程又是怎么样的？
 
-![image](https://user-images.githubusercontent.com/75611394/223910983-3702ff6a-a0f3-407a-9c3f-ec5e1e80841a.png)
-## 结构说明		
+关于分布式事务的实现方式和策略有很多种，常见的包括AT模式、TCC模式、Saga模式和可靠事件模式等。从架构设计上讲，我们引入特定的分布式事务模式即可完成对这一场景的设计，设计思路和方案是比较明确的，无需过多展开。
 
-OrderServer 提供的接口		
-	
-	用户信息的登录	
-		
-		用户信息保存到OrderDB
-		
-		用户信息保存到Redis
-		
-		通过RocketMQ发布消息（用户信息）
-	
-	用户信息的更新	
-		
-		用户信息保存到OrderDB
-		
-		用户信息更新到Redis
-		
-		通过RocketMQ发布消息（用户信息）
-		
+使用Seata AT事务模式实现
+AT模式下，通常的做法是创建三个代码工程，
+如下所示：
+business-service：业务主服务
+order-service：订单服务 
+account-service：用户账户服务
 
-AccountServer 提供的接口		
-	
-	Order的创建	
-		
-		用户信息的验证
-		
-		订单创建
-	
-	接收消息	
-## 流程说明		
-		
-		用户信息的登录
-		
-		用户信息的更新
-![image](https://user-images.githubusercontent.com/75611394/223911002-7f1f99dc-35b7-453c-b3c0-4a923986e78c.png)
-		
-		Order的创建
-![image](https://user-images.githubusercontent.com/75611394/223911014-a6f352e0-9c66-4efe-a23e-a273575eabfc.png)
+![image](https://user-images.githubusercontent.com/75611394/230105971-e16cacc7-e959-4a60-903f-d7f0c2ab7970.png)
+
+执行流程
+![image](https://user-images.githubusercontent.com/75611394/230108517-76e91b85-4476-4eb8-bdf8-39317df32b31.png)
+
