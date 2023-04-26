@@ -1,0 +1,16 @@
+port: 7001
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.1
+  application:
+    name: OrderServer
+  profiles:
+    active: dev
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
